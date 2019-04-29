@@ -1,0 +1,84 @@
+package lab2;
+
+import java.math.BigInteger;
+import java.util.Random;
+
+public class RSA {
+	
+	static BigInteger n1;
+	static BigInteger n2;
+	static BigInteger e;
+	//check 2 number is relatively prime
+	private static boolean getPrime(BigInteger n, BigInteger m) {
+		
+		if(n.isProbablePrime(100) && m.isProbablePrime(100) && n != m)
+		{
+			return true;
+		}
+		else return false;
+	}
+	
+	
+	@SuppressWarnings("null")
+	private static BigInteger[] keys(BigInteger n1, BigInteger n2)
+	{
+		BigInteger[] r = null;
+		BigInteger pq = n1.multiply(n2);
+		BigInteger n = n1.subtract(BigInteger.ONE).multiply(n2.subtract(BigInteger.ONE));
+		e =  BigInteger.probablePrime(1024, new Random());
+		while(n.gcd(e) != BigInteger.ONE && e.compareTo(n) == 1 && n == e )
+		{
+			e =  BigInteger.probablePrime(1024, new Random());
+			//System.out.println(e);		
+		}
+		BigInteger d = e.modInverse(n);
+		
+		//public key is (pq, e)   private key is (pq, d)
+		r[0] = null;
+		r[1] = pq;
+		r[2] = e;
+		r[3] = d;
+		return r;
+	}
+
+	private static BigInteger encript(String data, BigInteger pubK1, BigInteger pubK2)
+	{
+		byte[] tobyte = data.getBytes();
+		
+		BigInteger dataInte = new BigInteger(tobyte);
+		
+		BigInteger senddata = dataInte.modPow(pubK2, pubK1);
+		return senddata;
+		
+	}
+	private String decropt(BigInteger getdata, BigInteger priK1, BigInteger priK2)
+	{
+		BigInteger getInteger = getdata.modPow(priK2, priK1);
+		
+		byte[] getbyte = getInteger.toByteArray();
+		
+		return new String(getbyte);
+	}
+	
+	
+	public static void main(String args[]) {
+		 n1 = BigInteger.probablePrime(1024, new Random());
+		 n2 = BigInteger.probablePrime(1024, new Random());
+		
+		 while(getPrime(n1,n2) == false)
+		 {
+			 n1 = BigInteger.probablePrime(1024, new Random());
+			 n2 = BigInteger.probablePrime(1024, new Random());
+		 }
+		
+		 System.out.println("number 1: " + n1);
+		 System.out.println("number 2: " + n2);
+		 System.out.println("They are relatively prime");
+		BigInteger[] k = keys(n1,n2);
+		
+		String message = "hello joe";
+		
+		//encript(messege, k[0], k[1]);
+		System.out.println(encript(message, k[1], k[2]));
+	}
+}
